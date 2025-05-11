@@ -1,0 +1,923 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>GRU: Gated Recurrent Unit &#8212; Parcial práctico 2 - Deep Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'gru';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Bidireccional LSTM" href="bilstm.html" />
+    <link rel="prev" title="LSTM: Long Short-Term Memory" href="lstm.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/uninorte.jpg" class="logo__image only-light" alt="Parcial práctico 2 - Deep Learning - Home"/>
+    <script>document.write(`<img src="_static/uninorte.jpg" class="logo__image only-dark" alt="Parcial práctico 2 - Deep Learning - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Parcial práctico 2 - Deep Learning
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="eda.html"><strong>Análisis Exploratorio de Texto para Procesamiento del Lenguaje Natural (NLP)</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="rnn.html"><strong>RNN: Red Neuronal Recurrente</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="lstm.html"><strong>LSTM: Long Short-Term Memory</strong></a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><strong>GRU: Gated Recurrent Unit</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="bilstm.html"><strong>Bidireccional LSTM</strong></a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kmarcela11/Parcial2_DeepLearning" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kmarcela11/Parcial2_DeepLearning/issues/new?title=Issue%20on%20page%20%2Fgru.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/gru.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>GRU: Gated Recurrent Unit</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#librerias-e-importaciones">Librerias e importaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-es-una-gru">¿Qué es una GRU?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocesamiento">Preprocesamiento</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hyperparametros">Hyperparametros</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-por-hiperparametro">2. <strong>Análisis por hiperparámetro</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretacion">Interpretación:</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="gru-gated-recurrent-unit">
+<h1><strong>GRU: Gated Recurrent Unit</strong><a class="headerlink" href="#gru-gated-recurrent-unit" title="Link to this heading">#</a></h1>
+<section id="librerias-e-importaciones">
+<h2>Librerias e importaciones<a class="headerlink" href="#librerias-e-importaciones" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.preprocessing.text</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+<span class="n">tqdm</span><span class="o">.</span><span class="n">pandas</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;progress-bar&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gensim.models</span> <span class="kn">import</span> <span class="n">Doc2Vec</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">keras_preprocessing.sequence</span> <span class="kn">import</span> <span class="n">pad_sequences</span>
+<span class="kn">import</span> <span class="nn">gensim</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span> <span class="nn">gensim.models.doc2vec</span> <span class="kn">import</span> <span class="n">TaggedDocument</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">tensorflow.keras</span>
+<span class="kn">import</span> <span class="nn">sklearn</span> <span class="k">as</span> <span class="nn">sk</span>
+<span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">LSTM</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span>
+<span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">classification_report</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">auc</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">ParameterGrid</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="que-es-una-gru">
+<h2>¿Qué es una GRU?<a class="headerlink" href="#que-es-una-gru" title="Link to this heading">#</a></h2>
+<p>Una <strong>GRU</strong> es un tipo de red neuronal recurrente (RNN) diseñada para recordar información relevante a lo largo del tiempo y evitar el problema del “olvido” (también conocido como desvanecimiento del gradiente).</p>
+<p>Se utiliza mucho en tareas secuenciales como procesamiento de texto, series temporales, y audio, donde el orden y el contexto importan.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;GRU.png&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span> 
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Arquitectura GRU&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/c1e324472d35a222a9af7dc0604faea67112da429591a8af6fea3e0f9416da95.png" src="_images/c1e324472d35a222a9af7dc0604faea67112da429591a8af6fea3e0f9416da95.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">datapath</span> <span class="o">=</span> <span class="s1">&#39;C:/Users/EMANUEL/Documents/Modelos/Parcial2_DeepLearning/&#39;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">datapath</span> <span class="o">+</span> <span class="s1">&#39;to_models.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="preprocesamiento">
+<h2>Preprocesamiento<a class="headerlink" href="#preprocesamiento" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Replace NaN values in the &#39;message&#39; column with an empty string</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<span class="c1"># Process the &#39;message&#39; column to split words and count unique words</span>
+<span class="n">all_words</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">())))</span>
+<span class="n">word_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">all_words</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total de palabras únicas: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">word_counts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Total de palabras únicas: 27217
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">max_features</span> <span class="o">=</span> <span class="mi">6000</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>count    10998.000000
+mean        10.717494
+std         12.533056
+min          0.000000
+25%          4.000000
+50%          7.000000
+75%         12.000000
+max        243.000000
+Name: message, dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">MAX_SEQUENCE_LENGTH</span> <span class="o">=</span> <span class="mi">100</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">max_features</span> <span class="o">=</span> <span class="mi">5000</span>  
+<span class="n">embedding_dim</span> <span class="o">=</span> <span class="mi">50</span> 
+
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">(</span><span class="n">num_words</span><span class="o">=</span><span class="n">max_features</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="s1">&#39;!&quot;#$%&amp;()*+,-./:;&lt;=&gt;?@[$$^_`{|}~&#39;</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">fit_on_texts</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">texts_to_sequences</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pad_sequences</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">MAX_SEQUENCE_LENGTH</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Found </span><span class="si">%s</span><span class="s1"> unique tokens.&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Shape of data tensor:&#39;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 10998 unique tokens.
+Shape of data tensor: (10998, 100)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.20</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+<span class="n">le</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span>
+
+<span class="c1">#dImensiones</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0
+(10998, 100)
+8798
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="hyperparametros">
+<h2>Hyperparametros<a class="headerlink" href="#hyperparametros" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">GRU</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.preprocessing.sequence</span> <span class="kn">import</span> <span class="n">pad_sequences</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">ParameterGrid</span><span class="p">,</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># 1. Parámetros a explorar</span>
+<span class="n">param_grid_gru</span> <span class="o">=</span> <span class="p">{</span> 
+    <span class="s1">&#39;gru_units&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> 
+    <span class="s1">&#39;num_gru_layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> 
+    <span class="s1">&#39;dropout_rate&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> 
+    <span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> 
+    <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">],</span> 
+    <span class="s1">&#39;sequence_length&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> 
+    <span class="s1">&#39;epochs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> 
+    <span class="s1">&#39;embedding_dim&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">]</span> 
+<span class="p">}</span>
+
+<span class="c1"># 2. Preprocesar las etiquetas (CORREGIDO)</span>
+<span class="n">le</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span>  <span class="c1"># Asegúrate que &#39;data&#39; esté previamente cargado y tenga &#39;label&#39;</span>
+
+<span class="c1"># 3. Split (se hace después de codificar etiquetas)</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># 4. Controlar combinaciones</span>
+<span class="n">max_trials</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># Limita la búsqueda para no agotar recursos</span>
+<span class="n">param_combinations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ParameterGrid</span><span class="p">(</span><span class="n">param_grid_gru</span><span class="p">))[:</span><span class="n">max_trials</span><span class="p">]</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># 5. Grid search</span>
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">param_combinations</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🔍 Trial </span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_trials</span><span class="si">}</span><span class="s2"> — Hiperparámetros: </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Ajustar padding según &#39;sequence_length&#39;</span>
+    <span class="n">X_train_pad</span> <span class="o">=</span> <span class="n">pad_sequences</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;sequence_length&#39;</span><span class="p">])</span>
+    <span class="n">X_val_pad</span> <span class="o">=</span> <span class="n">pad_sequences</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;sequence_length&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Construcción del modelo GRU</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Embedding</span><span class="p">(</span><span class="n">input_dim</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">output_dim</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;embedding_dim&#39;</span><span class="p">],</span> <span class="n">input_length</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;sequence_length&#39;</span><span class="p">]))</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;num_gru_layers&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">GRU</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;gru_units&#39;</span><span class="p">],</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;dropout_rate&#39;</span><span class="p">]))</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">GRU</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;gru_units&#39;</span><span class="p">]))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;dropout_rate&#39;</span><span class="p">]))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>  <span class="c1"># Asume clasificación multiclase</span>
+
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">])</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;sparse_categorical_crossentropy&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+
+    <span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+        <span class="n">X_train_pad</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+        <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_val_pad</span><span class="p">,</span> <span class="n">y_val</span><span class="p">),</span>
+        <span class="n">epochs</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">],</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">],</span>
+        <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">EarlyStopping</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">)],</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span>  <span class="c1"># Cambia a 1 si quieres ver el progreso</span>
+    <span class="p">)</span>
+
+    <span class="n">val_loss</span><span class="p">,</span> <span class="n">val_acc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">X_val_pad</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Accuracy de validación: </span><span class="si">{</span><span class="n">val_acc</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> | Pérdida: </span><span class="si">{</span><span class="n">val_loss</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Guardar resultados</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="o">**</span><span class="n">params</span><span class="p">,</span> <span class="s1">&#39;val_accuracy&#39;</span><span class="p">:</span> <span class="n">val_acc</span><span class="p">,</span> <span class="s1">&#39;val_loss&#39;</span><span class="p">:</span> <span class="n">val_loss</span><span class="p">})</span>
+
+<span class="c1"># 6. Exportar resultados</span>
+<span class="n">results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="n">results_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;gru_hyperparam_results.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>🔍 Trial 1/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 50}
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c:\Users\EMANUEL\miniconda3\envs\ml_venv\lib\site-packages\keras\src\layers\core\embedding.py:90: UserWarning: Argument `input_length` is deprecated. Just remove it.
+  warnings.warn(
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>✅ Accuracy de validación: 0.7682 | Pérdida: 0.4743
+
+🔍 Trial 2/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 100}
+✅ Accuracy de validación: 0.7632 | Pérdida: 0.4756
+
+🔍 Trial 3/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 200}
+✅ Accuracy de validación: 0.7714 | Pérdida: 0.4717
+
+🔍 Trial 4/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 50}
+✅ Accuracy de validación: 0.7668 | Pérdida: 0.4726
+
+🔍 Trial 5/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 100}
+✅ Accuracy de validación: 0.7618 | Pérdida: 0.4734
+
+🔍 Trial 6/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 200}
+✅ Accuracy de validación: 0.7591 | Pérdida: 0.4826
+
+🔍 Trial 7/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 50}
+✅ Accuracy de validación: 0.7809 | Pérdida: 0.4683
+
+🔍 Trial 8/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 100}
+✅ Accuracy de validación: 0.7864 | Pérdida: 0.4651
+
+🔍 Trial 9/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 200}
+✅ Accuracy de validación: 0.7718 | Pérdida: 0.4650
+
+🔍 Trial 10/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 50}
+✅ Accuracy de validación: 0.7677 | Pérdida: 0.4901
+
+🔍 Trial 11/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 100}
+✅ Accuracy de validación: 0.7777 | Pérdida: 0.4676
+
+🔍 Trial 12/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 200}
+✅ Accuracy de validación: 0.7650 | Pérdida: 0.4885
+
+🔍 Trial 13/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.01, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 50}
+✅ Accuracy de validación: 0.7532 | Pérdida: 0.4886
+
+🔍 Trial 14/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.01, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 100}
+✅ Accuracy de validación: 0.7591 | Pérdida: 0.5099
+
+🔍 Trial 15/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.01, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 200}
+✅ Accuracy de validación: 0.7782 | Pérdida: 0.4669
+
+🔍 Trial 16/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.01, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 50}
+✅ Accuracy de validación: 0.7591 | Pérdida: 0.4983
+
+🔍 Trial 17/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.01, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 100}
+✅ Accuracy de validación: 0.7645 | Pérdida: 0.5171
+
+🔍 Trial 18/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 64, &#39;learning_rate&#39;: 0.01, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 200}
+✅ Accuracy de validación: 0.7727 | Pérdida: 0.4715
+
+🔍 Trial 19/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 50}
+✅ Accuracy de validación: 0.7823 | Pérdida: 0.4701
+
+🔍 Trial 20/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 100}
+✅ Accuracy de validación: 0.7777 | Pérdida: 0.4682
+
+🔍 Trial 21/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 200}
+✅ Accuracy de validación: 0.7755 | Pérdida: 0.4882
+
+🔍 Trial 22/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 50}
+✅ Accuracy de validación: 0.7723 | Pérdida: 0.4712
+
+🔍 Trial 23/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 100}
+✅ Accuracy de validación: 0.7623 | Pérdida: 0.4767
+
+🔍 Trial 24/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.001, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 200}
+✅ Accuracy de validación: 0.7627 | Pérdida: 0.4776
+
+🔍 Trial 25/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 50}
+✅ Accuracy de validación: 0.7841 | Pérdida: 0.4686
+
+🔍 Trial 26/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 100}
+✅ Accuracy de validación: 0.7718 | Pérdida: 0.4738
+
+🔍 Trial 27/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 1, &#39;sequence_length&#39;: 200}
+✅ Accuracy de validación: 0.7886 | Pérdida: 0.4657
+
+🔍 Trial 28/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 50}
+✅ Accuracy de validación: 0.7541 | Pérdida: 0.5003
+
+🔍 Trial 29/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 100}
+✅ Accuracy de validación: 0.7645 | Pérdida: 0.4670
+
+🔍 Trial 30/30 — Hiperparámetros: {&#39;batch_size&#39;: 32, &#39;dropout_rate&#39;: 0.2, &#39;embedding_dim&#39;: 100, &#39;epochs&#39;: 20, &#39;gru_units&#39;: 128, &#39;learning_rate&#39;: 0.005, &#39;num_gru_layers&#39;: 2, &#39;sequence_length&#39;: 200}
+✅ Accuracy de validación: 0.7750 | Pérdida: 0.4760
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="analisis-por-hiperparametro">
+<h2>2. <strong>Análisis por hiperparámetro</strong><a class="headerlink" href="#analisis-por-hiperparametro" title="Link to this heading">#</a></h2>
+<section id="interpretacion">
+<h3>Interpretación:<a class="headerlink" href="#interpretacion" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>gru_units
+Subir de 64 → 128 mejora ligeramente el rendimiento.</p></li>
+</ol>
+<p>gru_units=128 aparece en muchos de los mejores trials.</p>
+<p>Más unidades permiten al modelo aprender patrones más complejos.</p>
+<ol class="arabic simple" start="2">
+<li><p>num_gru_layers
+1 capa GRU suele rendir mejor o igual que 2 capas.</p></li>
+</ol>
+<p>Modelos con 2 capas GRU no mejoraron significativamente el accuracy y a veces fueron peores.</p>
+<ol class="arabic simple" start="3">
+<li><p>dropout_rate
+Solo probaste con 0.2 hasta ahora, así que aún no hay comparación real. Pero funciona bien.</p></li>
+</ol>
+<p>Podría valer la pena explorar 0.3 o 0.5 más adelante para evitar overfitting si entrenas más epochs.</p>
+<ol class="arabic simple" start="4">
+<li><p>epochs
+En esta serie solo se usaron 20 epochs. Es posible que al entrenar más (50 o 100) y con EarlyStopping, puedas exprimir mejor los buenos modelos.</p></li>
+<li><p>learning_rate
+0.005 tuvo mejor rendimiento que 0.001 o 0.01 en múltiples pruebas.</p></li>
+</ol>
+<p>Es un buen punto medio, y parece ser el más consistente.</p>
+<ol class="arabic simple" start="6">
+<li><p>batch_size
+Solo has probado batch_size=32 en estos trials. Aunque funciona bien, no sabemos si 64 o 128 podrían acelerar o afectar la generalización.</p></li>
+<li><p>embedding_dim
+Probaste solo embedding_dim=100, y dio buenos resultados. Tal vez subir a 200 o 300 podría mejorar el modelado semántico si usas embeddings aleatorios o entrenables.</p></li>
+</ol>
+<p>Hiperparámetro	Valor más efectivo	Observación relevante
+<strong>gru_units</strong>	128	Mejor rendimiento que 64
+<strong>num_gru_layers</strong>	1	2 capas no mejoran, incluso a veces empeoran
+<strong>dropout_rate</strong>	0.2	Solo probaste ese, pero funcionó bien
+<strong>learning_rate</strong>	0.005	Superó consistentemente a 0.001 y 0.01
+<strong>batch_size</strong>	32	Solo se probó ese valor
+<strong>sequence_length</strong>	200	Secuencias largas mejoran el contexto
+<strong>epochs</strong>	20 Fue constante, aún no se ha probado con más
+<strong>embedding_dim</strong>	100	Solo se probó ese, pero dio buenos resultados</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="lstm.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><strong>LSTM: Long Short-Term Memory</strong></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="bilstm.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><strong>Bidireccional LSTM</strong></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#librerias-e-importaciones">Librerias e importaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-es-una-gru">¿Qué es una GRU?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocesamiento">Preprocesamiento</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hyperparametros">Hyperparametros</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-por-hiperparametro">2. <strong>Análisis por hiperparámetro</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretacion">Interpretación:</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Kanery Camargo. Emanuel Carbonell. Henry Saenz.
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
